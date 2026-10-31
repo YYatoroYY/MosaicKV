@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# One container = one EC node. Both volatile processes share its lifetime.
+set -uo pipefail
+ulimit -c 0
+case "${STORAGE_BACKEND:-native}" in
+    native) exec ec_node ;;
+    memcached) ;;
+    *) echo "invalid STORAGE_BACKEND: ${STORAGE_BACKEND}" >&2; exit 1 ;;
+esac
+cache_pid=
+node_pid=
+stop() {
+    trap '' TERM INT
+    for pid in "$node_pid" "$cache_pid"; do
+        if [[ -n "$pid" ]]; then kill -TERM "$pid" 2>/dev/null || true; fi
+    done
+    wait 2>/dev/null || true
+}
+trap 'stop; exit 0' TERM INT
+# -M: do not evict live EC data. -F: no flush_all. TTL is zero in the client.
+# No -e/memory-file, extstore, daemon mode, pid file or log file.
+memcached -u "$(id -un)" -l 127.0.0.1 -p "${MEMCACHED_PORT:-11211}" -U 0 \
+    -m "${MEMCACHED_MEMORY_MB:-512}" -I "${MEMCACHED_MAX_ITEM_MB:-128}m" \
+    -t "${MEMCACHED_THREADS:-4}" -M -F &
+cache_pid=$!
+ec_node &
+node_pid=$!
+wait -n "$cache_pid" "$node_pid"
+status=$?
+echo "EC node child exited (status=$status); stopping both volatile processes" >&2
+stop
+exit 1

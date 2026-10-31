@@ -1,0 +1,29 @@
+name: Build and regression tests
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install build and Python dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y g++ make libboost-dev libzmq3-dev libisal-dev libmemcached-dev
+          python3 -m pip install -r experiments/requirements.txt
+      - name: C++ regression tests
+        run: make -j2 test
+      - name: Measurement regressions
+        run: python3 -m unittest discover -s tests -p test_measurement_tools.py -v
+      - name: Native cluster transaction and allocator faults
+        run: python3 -m unittest discover -s tests -p test_mosaic_protocol.py -v
+      - name: Key concurrency and pinned-reader reclamation
+        run: python3 -m unittest discover -s tests -p test_key_concurrency.py -v
+      - name: Index and reclamation address/undefined-behavior sanitizers
+        run: |
+          g++ -std=c++17 -g -O1 -fsanitize=address,undefined -fno-omit-frame-pointer -Isrc tests/key_index_test.cpp -o bin/key_index_sanitized -lzmq -pthread
+          ./bin/key_index_sanitized

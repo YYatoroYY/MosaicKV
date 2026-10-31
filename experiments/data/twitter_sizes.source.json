@@ -1,0 +1,42 @@
+{
+  "file": "twitter_sizes.csv",
+  "sha256": "02606ffc221b059b57700213203a7122a4c60f89ac5a904f8785cf1a36f04a83",
+  "kind": "synthetic_reference_value_length_distribution",
+  "provenance": "Value-length reference for the Twitter workload based on Twemcache clusters 12, 15, 31 and 37.",
+  "bibliographic_reference": {
+    "key": "yang2020large",
+    "title": "A large scale analysis of hundreds of in-memory cache clusters at Twitter",
+    "authors": [
+      "Juncheng Yang",
+      "Yao Yue",
+      "K. V. Rashmi"
+    ],
+    "venue": "OSDI 2020",
+    "url": "https://www.usenix.org/conference/osdi20/presentation/yang"
+  },
+  "normalization_total": 200000,
+  "preprocessing": {
+    "size_range_bytes": [
+      1,
+      4096
+    ],
+    "small_bin_range_bytes": [
+      1,
+      32
+    ],
+    "small_bin_mode": "uniform",
+    "small_bin_weight_per_size": 2489,
+    "small_bin_weight_fraction": 0.39824
+  },
+  "limitations": [
+    "Not an original Twitter trace.",
+    "Does not preserve request timestamps, keys, TTLs or joint old/new value lengths.",
+    "The 1..32 B interval is uniformized."
+  ],
+  "clusters": [
+    12,
+    15,
+    31,
+    37
+  ]
+}

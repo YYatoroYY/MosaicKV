@@ -1,0 +1,10 @@
+bin/
+__pycache__/
+tests/__pycache__/
+*.log
+compose.generated.json
+compose.generated.nodes.conf
+
+workloads/
+results/
+.venv/

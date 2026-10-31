@@ -1,0 +1,8 @@
+*
+!Makefile
+!src/
+!src/**
+!tests/
+!tests/*.cpp
+!scripts/
+!scripts/ec_node_service

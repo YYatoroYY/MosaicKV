@@ -1,0 +1,127 @@
+name: mosaickv
+
+x-node: &node
+  image: ${EC_IMAGE:-mosaickv:local}
+  command: ["ec_node_service"]
+  restart: unless-stopped
+  read_only: true
+  networks: [ec]
+
+x-node-env: &node-env
+  EC_K: ${EC_K:-6}
+  EC_M: ${EC_M:-3}
+  BLOCK_SIZE: ${BLOCK_SIZE:-4096}
+  NODES_FILE: /app/nodes.conf
+  NODE_TIMEOUT_MS: ${NODE_TIMEOUT_MS:-1000}
+  STORAGE_BACKEND: ${STORAGE_BACKEND:-native}
+  NATIVE_MEMORY_MB: ${NATIVE_MEMORY_MB:-512}
+  MEMCACHED_MEMORY_MB: ${MEMCACHED_MEMORY_MB:-512}
+  MEMCACHED_MAX_ITEM_MB: ${MEMCACHED_MAX_ITEM_MB:-128}
+  MEMCACHED_THREADS: ${MEMCACHED_THREADS:-4}
+  MOSAIC_BATCH_IO: "1"
+  MOSAIC_PARALLEL_IO: "0"
+  MOSAIC_IO_THREADS: ${MOSAIC_IO_THREADS:-4}
+  MOSAIC_CHUNK_BYTES: ${MOSAIC_CHUNK_BYTES:-262144}
+  MEMCACHED_PORT: "11211"
+  MEMCACHED_TIMEOUT_MS: ${MEMCACHED_TIMEOUT_MS:-1000}
+  EC_WORKLOAD_PHASE: ${EC_WORKLOAD_PHASE:-load}
+
+services:
+  proxy:
+    image: ${EC_IMAGE:-mosaickv:local}
+    build:
+      context: .
+      target: runtime
+    command: ["ec_proxy"]
+    restart: unless-stopped
+    read_only: true
+    environment:
+      EC_K: ${EC_K:-6}
+      EC_M: ${EC_M:-3}
+      BLOCK_SIZE: ${BLOCK_SIZE:-4096}
+      STATS_TIMEOUT_MS: ${STATS_TIMEOUT_MS:-10000}
+      NODE_TIMEOUT_MS: ${NODE_TIMEOUT_MS:-1000}
+      NODES_FILE: /app/nodes.conf
+      STORAGE_BACKEND: ${STORAGE_BACKEND:-native}
+      CODING_UNIT: ${CODING_UNIT:-object}
+      ALIGNMENT_CHUNK: ${ALIGNMENT_CHUNK:-4096}
+      MOSAIC_FMAX: ${MOSAIC_FMAX:-4}
+      MOSAIC_TAU: ${MOSAIC_TAU:-8}
+      UPDATE_STRATEGY: ${UPDATE_STRATEGY:-mosaic}
+      GC_START_PERCENT: ${GC_START_PERCENT:-20}
+      GC_STOP_PERCENT: ${GC_STOP_PERCENT:-10}
+      GC_INTERVAL_MS: ${GC_INTERVAL_MS:-1000}
+      GC_BATCH_STRIPES: ${GC_BATCH_STRIPES:-32}
+      GC_NODE_CAPACITY_BYTES: ${GC_NODE_CAPACITY_BYTES:-0}
+      GC_SPACE_START_PERCENT: ${GC_SPACE_START_PERCENT:-80}
+      GC_SPACE_STOP_PERCENT: ${GC_SPACE_STOP_PERCENT:-70}
+      GC_PAUSED: ${GC_PAUSED:-0}
+      GC_EVERY_UPDATES: ${GC_EVERY_UPDATES:-5000}
+      EC_WORKLOAD_PHASE: ${EC_WORKLOAD_PHASE:-load}
+    ports: ["127.0.0.1:${EC_PORT:-15555}:5555"]
+    volumes:
+      - ./nodes.conf:/app/nodes.conf:ro
+    networks: [ec]
+    depends_on: [node0, node1, node2, node3, node4, node5, node6, node7, node8]
+    healthcheck:
+      test: ["CMD", "ec_client", "--endpoint", "tcp://127.0.0.1:5555", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+  node0:
+    <<: *node
+    environment:
+      <<: *node-env
+      NODE_ID: "0"
+    volumes: ["./nodes.conf:/app/nodes.conf:ro"]
+  node1:
+    <<: *node
+    environment:
+      <<: *node-env
+      NODE_ID: "1"
+    volumes: ["./nodes.conf:/app/nodes.conf:ro"]
+  node2:
+    <<: *node
+    environment:
+      <<: *node-env
+      NODE_ID: "2"
+    volumes: ["./nodes.conf:/app/nodes.conf:ro"]
+  node3:
+    <<: *node
+    environment:
+      <<: *node-env
+      NODE_ID: "3"
+    volumes: ["./nodes.conf:/app/nodes.conf:ro"]
+  node4:
+    <<: *node
+    environment:
+      <<: *node-env
+      NODE_ID: "4"
+    volumes: ["./nodes.conf:/app/nodes.conf:ro"]
+  node5:
+    <<: *node
+    environment:
+      <<: *node-env
+      NODE_ID: "5"
+    volumes: ["./nodes.conf:/app/nodes.conf:ro"]
+  node6:
+    <<: *node
+    environment:
+      <<: *node-env
+      NODE_ID: "6"
+    volumes: ["./nodes.conf:/app/nodes.conf:ro"]
+  node7:
+    <<: *node
+    environment:
+      <<: *node-env
+      NODE_ID: "7"
+    volumes: ["./nodes.conf:/app/nodes.conf:ro"]
+  node8:
+    <<: *node
+    environment:
+      <<: *node-env
+      NODE_ID: "8"
+    volumes: ["./nodes.conf:/app/nodes.conf:ro"]
+
+networks:
+  ec: {}

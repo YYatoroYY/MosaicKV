@@ -1,0 +1,19 @@
+{
+  "dataset": "anon8231489123/ShareGPT_Vicuna_unfiltered",
+  "revision": "192ab2185289094fc556ec8ce5ce1e8e587154ca",
+  "selection": "Both HTML-cleaned source files; not the token-split or content-filtered training subset.",
+  "files": [
+    {
+      "path": "sg_90k_part1_html_cleaned.json",
+      "url": "https://huggingface.co/datasets/anon8231489123/ShareGPT_Vicuna_unfiltered/resolve/192ab2185289094fc556ec8ce5ce1e8e587154ca/HTML_cleaned_raw_dataset/sg_90k_part1_html_cleaned.json",
+      "sha256": "183c744455c6be491dba42ffee41afdae06d1d79adbcd86b7fef30d2a3206f86",
+      "bytes": 551420693
+    },
+    {
+      "path": "sg_90k_part2_html_cleaned.json",
+      "url": "https://huggingface.co/datasets/anon8231489123/ShareGPT_Vicuna_unfiltered/resolve/192ab2185289094fc556ec8ce5ce1e8e587154ca/HTML_cleaned_raw_dataset/sg_90k_part2_html_cleaned.json",
+      "sha256": "32c3e772d044e2a6c74b8d3ca6a627da67634b32cc4e7333fd128cb8bfad70e4",
+      "bytes": 548183942
+    }
+  ]
+}
